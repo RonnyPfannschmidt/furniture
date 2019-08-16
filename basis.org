@@ -1,0 +1,31 @@
+TeileListe
+-----------
+
+
+
+* Korpusbrett
+  - 40x80cm
+  - 3cm dick
+
+* DeckBrett
+  - 50x100 cmm
+  - 3cm dick
+
+* Rückwand
+  - 40x100 cm
+  - 3cm Dick
+
+* Frontwand
+  - 39x99.5 cm
+  - 3cm dick
+
+
+
+
+* Element
+  - 3 Korpusbretter
+  - 1 Rückwand
+  - 2 DeckBrett
+  - 2 Schubladen
+
+* 
