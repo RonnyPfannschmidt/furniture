@@ -1,6 +1,7 @@
 import attr
 import enum
 
+
 class MaterialTyp(enum.Enum):
     BRETT = enum.auto()
     SCHREINERPLATTE = enum.auto()
@@ -16,6 +17,7 @@ class MagicalListMixin:
 
     def __radd___(self, other):
         return other * [self]
+
 
 @attr.s(frozen=True)
 class Material:
