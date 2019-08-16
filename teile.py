@@ -101,7 +101,7 @@ def teileliste(*, korpus, fach_kanten, deck, front, seitentbreite, füll):
     # DECKENFUELLER = aussen(lang=DECKBREITE, breit=DICKE)
     füller = (seitenfüller + dekenfüller) * 2
 
-    return element * 2 + füller
+    return element * 2 + ELEMENT_VERBINDER * 3 + füller
 
 
 SCHICHTHOLZ_27_KORPUS = Material(
