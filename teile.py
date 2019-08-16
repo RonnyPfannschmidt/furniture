@@ -13,6 +13,9 @@ class MagicalListMixin:
     def __mul__(self, number):
         return [self] * number
 
+    def __add__(self, other):
+        return [self] + other
+
 @attr.s(frozen=True)
 class Material:
     name = attr.ib(cmp=False)
@@ -57,13 +60,13 @@ HÖHE = 400
 
 KOEPUS_DÜBEL = StückGut("HolzdübelKorpus")
 FACH_DÜBEL = StückGut("HolzdübelFach")
-VERBINDUNGS_BOLZEN = StückGut("Scraubverbindung")
+VERBINDUNGS_BOLZEN = StückGut("Schraubverbindung")
 FACH_SCHRAUBE = StückGut("Fachschraube") # sollen auch front an fach bringen
 KORPUS_SCHRAUBE = StückGut("Korpusschraube") # bringen seitenteile an front
 ELEMENT_VERBINDER = StückGut("ElementVerbinder")
 
 
-def teileliste(*, korpus, fach_kanten, deck, front, seitentbreite):
+def teileliste(*, korpus, fach_kanten, deck, front, seitentbreite, füll):
 
     hinterwand = korpus.brett(ELEMENT)
     deckteil = deck.brett(ELEMENT)
@@ -78,9 +81,9 @@ def teileliste(*, korpus, fach_kanten, deck, front, seitentbreite):
     schublade_seite = fach_kanten.brett(seitenteil.lang - 2 * fach_kanten.dick - SPIEL)
 
     # todo: schublade brett
-    schublade = [front_teil] + FACH_SCHRAUBE * 3 + [schublade_breite] * 2 + [schublade_seite] * 2
+    schublade = front_teil + FACH_SCHRAUBE * 3 + schublade_breite * 2 + schublade_seite * 2
 
-    element = [hinterwand] + [deckteil] * 2 + [seitenteil] * 3 + schublade * 2
+    element = hinterwand + VERBINDUNGS_BOLZEN*2 +  deckteil * 2 + seitenteil * 3 + VERBINDUNGS_BOLZEN*2*3 + schublade * 2
 
     # SEITENFUELLER = aussen(lang=BASIS_HOCH, breit=DICKE)
 
@@ -98,7 +101,7 @@ SCHICHTHOLZ_27_KORPUS = Material(
 SCHICHTHOLZ_27_DECK = attr.evolve(SCHICHTHOLZ_27_KORPUS, breit=ELEMENT // 2)
 
 SCHICHTHOLZ_27_FRONT = attr.evolve(SCHICHTHOLZ_27_KORPUS, breit=HÖHE - SPIEL)
-
+SCHICHTHOLZ_27_FÜLL = attr.evolve(SCHICHTHOLZ_27_KORPUS, breit=WANDÜBERSTAND)
 
 FICHTE_200_18 = Material(
     name="Fichtenbrett_200x18",
@@ -112,6 +115,7 @@ counted = Counter(teileliste(
     korpus=SCHICHTHOLZ_27_KORPUS,
     deck=SCHICHTHOLZ_27_DECK,
     front=SCHICHTHOLZ_27_FRONT,
+    füll=SCHICHTHOLZ_27_FÜLL,
     fach_kanten=FICHTE_200_18,
     seitentbreite=800,  # TODO: ausrechnen
 ))
