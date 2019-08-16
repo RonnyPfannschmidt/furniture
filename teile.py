@@ -16,6 +16,9 @@ class MagicalListMixin:
     def __add__(self, other):
         return [self] + other
 
+    def __radd___(self, other):
+        return other * [self]
+
 @attr.s(frozen=True)
 class Material:
     name = attr.ib(cmp=False)
@@ -58,11 +61,11 @@ WANDÜBERSTAND = 30
 FRONTÜBERSTAND = 10
 HÖHE = 400
 
-KOEPUS_DÜBEL = StückGut("HolzdübelKorpus")
-FACH_DÜBEL = StückGut("HolzdübelFach")
+KORPUS_DÜBEL = StückGut("Holzdübel_Korpus")
+FACH_DÜBEL = StückGut("Holzdübel_Fach")
 VERBINDUNGS_BOLZEN = StückGut("Schraubverbindung")
-FACH_SCHRAUBE = StückGut("Fachschraube") # sollen auch front an fach bringen
-KORPUS_SCHRAUBE = StückGut("Korpusschraube") # bringen seitenteile an front
+FACH_SCHRAUBE = StückGut("Fachschraube")  # sollen auch front an fach bringen
+KORPUS_SCHRAUBE = StückGut("Korpusschraube")  # bringen seitenteile an front
 ELEMENT_VERBINDER = StückGut("ElementVerbinder")
 
 
@@ -81,15 +84,24 @@ def teileliste(*, korpus, fach_kanten, deck, front, seitentbreite, füll):
     schublade_seite = fach_kanten.brett(seitenteil.lang - 2 * fach_kanten.dick - SPIEL)
 
     # todo: schublade brett
-    schublade = front_teil + FACH_SCHRAUBE * 3 + schublade_breite * 2 + schublade_seite * 2
+    schublade = (
+        front_teil + FACH_SCHRAUBE * 3 +
+        schublade_breite * 2 +
+        FACH_SCHRAUBE * 2 * 2 + FACH_DÜBEL * 2 * 2 +
+        schublade_seite * 2
+    )
 
-    element = hinterwand + VERBINDUNGS_BOLZEN*2 +  deckteil * 2 + seitenteil * 3 + VERBINDUNGS_BOLZEN*2*3 + schublade * 2
-
+    element = (
+        hinterwand + VERBINDUNGS_BOLZEN * 2 + KORPUS_DÜBEL * 1 + deckteil * 2 +
+        seitenteil * 3 + VERBINDUNGS_BOLZEN * 2 * 3 + schublade * 2
+    )
+    seitenfüller = füll.brett(korpus.breit) + KORPUS_SCHRAUBE * 3
+    dekenfüller = füll.brett(deck.breit) + KORPUS_SCHRAUBE * 2 + KORPUS_DÜBEL * 1
     # SEITENFUELLER = aussen(lang=BASIS_HOCH, breit=DICKE)
-
     # DECKENFUELLER = aussen(lang=DECKBREITE, breit=DICKE)
+    füller = (seitenfüller + dekenfüller) * 2
 
-    return element * 2  # + [SEITENFUELLER, DECKENFUELLER] * 2
+    return element * 2 + füller
 
 
 SCHICHTHOLZ_27_KORPUS = Material(
