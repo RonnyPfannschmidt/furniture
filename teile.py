@@ -69,10 +69,13 @@ KORPUS_SCHRAUBE = StückGut("Korpusschraube")  # bringen seitenteile an front
 ELEMENT_VERBINDER = StückGut("ElementVerbinder")
 
 
-def teileliste(*, korpus, fach_kanten, deck, front, seitentbreite, füll):
+def teileliste(*, korpus, fach_kanten, deck, front, füll):
+
 
     hinterwand = korpus.brett(ELEMENT)
     deckteil = deck.brett(ELEMENT)
+
+    seitentbreite = ELEMENT - WANDÜBERSTAND - korpus.dick - FRONTÜBERSTAND - front.dick 
 
     seitenteil = korpus.brett(seitentbreite)
 
@@ -91,11 +94,17 @@ def teileliste(*, korpus, fach_kanten, deck, front, seitentbreite, füll):
         schublade_seite * 2
     )
 
+    verbindung = VERBINDUNGS_BOLZEN * 2 + KORPUS_DÜBEL * 1
+
     element = (
-        hinterwand + VERBINDUNGS_BOLZEN * 2 + KORPUS_DÜBEL * 1 + deckteil * 2 +
-        seitenteil * 3 + VERBINDUNGS_BOLZEN * 2 * 3 + schublade * 2
+        hinterwand + verbindung + 
+        deckteil * 2 +
+        seitenteil * 3 + verbindung * 3 * 3 + 
+        schublade * 2
     )
-    seitenfüller = füll.brett(korpus.breit) + KORPUS_SCHRAUBE * 3
+
+
+    seitenfüller = füll.brett(korpus.breit + WANDÜBERSTAND) + KORPUS_SCHRAUBE * 3
     dekenfüller = füll.brett(deck.breit) + KORPUS_SCHRAUBE * 2 + KORPUS_DÜBEL * 1
     # SEITENFUELLER = aussen(lang=BASIS_HOCH, breit=DICKE)
     # DECKENFUELLER = aussen(lang=DECKBREITE, breit=DICKE)
@@ -129,7 +138,6 @@ counted = Counter(teileliste(
     front=SCHICHTHOLZ_27_FRONT,
     füll=SCHICHTHOLZ_27_FÜLL,
     fach_kanten=FICHTE_200_18,
-    seitentbreite=800,  # TODO: ausrechnen
 ))
 teile = counted.most_common()
 
