@@ -5,8 +5,11 @@ from picocam import MaterialTyp, Material, StückGut
 
 SPIEL = 5
 ELEMENT = 1000
-WANDÜBERSTAND = 30
-FRONTÜBERSTAND = 10
+ÜBERSTAND = SPIEL
+ÜBERSTAND = SPIEL
+
+ÜBERSTAND_WAND = 30
+HÖHE_SEITENLEISTEN_WAND = 20
 HÖHE = 400
 
 KORPUS_DÜBEL = StückGut("Holzdübel_Korpus")
@@ -16,22 +19,32 @@ FACH_SCHRAUBE = StückGut("Fachschraube")  # sollen auch front an fach bringen
 KORPUS_SCHRAUBE = StückGut("Korpusschraube")  # bringen seitenteile an front
 ELEMENT_VERBINDER = StückGut("ElementVerbinder")
 
+ROLLE = StückGut("BodenRolleWeich")
 
-def teileliste(*, korpus, fach_kanten, deck, front, füll):
+def teileliste(
+    *, korpus_seite, korpus_hinten, fach_kanten, deck, front, fuell, mat_fachboden
+):
 
-    hinterwand = korpus.brett(ELEMENT)
+    hinterwand = korpus_hinten.brett(ELEMENT)
     deckteil = deck.brett(ELEMENT)
 
-    seitentbreite = ELEMENT - WANDÜBERSTAND - korpus.dick - FRONTÜBERSTAND - front.dick
+    seitentbreite = ELEMENT - ÜBERSTAND - korpus_hinten.dick - ÜBERSTAND - front.dick
 
-    seitenteil = korpus.brett(seitentbreite)
+    seitenteil = korpus_seite.brett(seitentbreite)
 
     front_teil = front.brett(hinterwand.lang - SPIEL // 2)
 
-    breite_ausspaarung = (ELEMENT - 3 * korpus.dick) // 2 - SPIEL
+    breite_ausspaarung = (ELEMENT - 3 * korpus_seite.dick) // 2 - SPIEL
 
     schublade_breite = fach_kanten.brett(breite_ausspaarung)
     schublade_seite = fach_kanten.brett(seitenteil.lang - 2 * fach_kanten.dick - SPIEL)
+
+    XXX: hack
+
+    schublade_innenbreite = breite_ausspaarung - 2 * fach_kanten.dick
+    mat_innenboden = attr.evolve(mat_fachboden, breit=schublade_innenbreite + 2 * SPIEL)
+
+    innenboden = mat_innenboden.brett(lang=schublade_seite.lang + 2 * SPIEL)
 
     # todo: schublade brett
     schublade = (
@@ -41,6 +54,8 @@ def teileliste(*, korpus, fach_kanten, deck, front, füll):
         + FACH_SCHRAUBE * 2 * 2
         + FACH_DÜBEL * 2 * 2
         + schublade_seite * 2
+        + ROLLE * 3 * 2
+        + innenboden * 1
     )
 
     verbindung = VERBINDUNGS_BOLZEN * 2 + KORPUS_DÜBEL * 1
@@ -54,35 +69,45 @@ def teileliste(*, korpus, fach_kanten, deck, front, füll):
         + schublade * 2
     )
 
-    seitenfüller = füll.brett(korpus.breit + WANDÜBERSTAND) + KORPUS_SCHRAUBE * 3
-    dekenfüller = füll.brett(deck.breit) + KORPUS_SCHRAUBE * 2 + KORPUS_DÜBEL * 1
+    seitenfueller = (
+        fuell.brett(korpus_seite.breit + ÜBERSTAND_WAND) + KORPUS_SCHRAUBE * 3
+    )
+    dekenfueller = fuell.brett(deck.breit) + KORPUS_SCHRAUBE * 2 + KORPUS_DÜBEL * 1
     # SEITENFUELLER = aussen(lang=BASIS_HOCH, breit=DICKE)
     # DECKENFUELLER = aussen(lang=DECKBREITE, breit=DICKE)
-    füller = (seitenfüller + dekenfüller) * 2
+    fueller = seitenfueller + dekenfueller * 2
 
-    return element * 2 + ELEMENT_VERBINDER * 3 + füller
+    return element * 2 + ELEMENT_VERBINDER * 3 + fueller
 
 
-SCHICHTHOLZ_27_KORPUS = Material(
-    name="Schichtholz_27", dick=27, breit=HÖHE, typ=MaterialTyp.SCHREINERPLATTE
+SCHICHTHOLZ_27 = Material(
+    name="Schichtholz_27", dick=27, breit=None, typ=MaterialTyp.SCHREINERPLATTE
 )
-SCHICHTHOLZ_27_DECK = attr.evolve(SCHICHTHOLZ_27_KORPUS, breit=ELEMENT // 2)
 
-SCHICHTHOLZ_27_FRONT = attr.evolve(SCHICHTHOLZ_27_KORPUS, breit=HÖHE - SPIEL)
-SCHICHTHOLZ_27_FÜLL = attr.evolve(SCHICHTHOLZ_27_KORPUS, breit=WANDÜBERSTAND)
+
+SCHICHTHOLZ_27_KORPUS_SEITE = attr.evolve(SCHICHTHOLZ_27, breit=HÖHE)
+SCHICHTHOLZ_27_KORPUS_HINTEN = attr.evolve(
+    SCHICHTHOLZ_27, breit=HÖHE - HÖHE_SEITENLEISTEN_WAND
+)
+SCHICHTHOLZ_27_DECK = attr.evolve(SCHICHTHOLZ_27, breit=ELEMENT // 2)
+
+SCHICHTHOLZ_27_FRONT = attr.evolve(SCHICHTHOLZ_27, breit=HÖHE - SPIEL)
+SCHICHTHOLZ_27_FUELL = attr.evolve(SCHICHTHOLZ_27, breit=ÜBERSTAND_WAND)
 
 FICHTE_200_18 = Material(
     name="Fichtenbrett_200x18", dick=18, breit=200, typ=MaterialTyp.BRETT
 )
-
+SPERRHOLZ_6 = Material(name="Sperrholz_6", dick=5, breit=None, typ=MaterialTyp.SPERRHOLZ)
 
 counted = Counter(
     teileliste(
-        korpus=SCHICHTHOLZ_27_KORPUS,
+        korpus_seite=SCHICHTHOLZ_27_KORPUS_SEITE,
+        korpus_hinten=SCHICHTHOLZ_27_KORPUS_HINTEN,
         deck=SCHICHTHOLZ_27_DECK,
         front=SCHICHTHOLZ_27_FRONT,
-        füll=SCHICHTHOLZ_27_FÜLL,
+        fuell=SCHICHTHOLZ_27_FUELL,
         fach_kanten=FICHTE_200_18,
+        mat_fachboden=SPERRHOLZ_6,
     )
 )
 teile = counted.most_common()

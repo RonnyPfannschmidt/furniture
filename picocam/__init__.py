@@ -26,6 +26,12 @@ class Material:
     breit = attr.ib()
     typ = attr.ib()
 
+    def __str__(self):
+        if self.typ == MaterialTyp.BRETT:
+            return f"{self.name}-"
+        else:
+            return f"{self.name}-{self.breit}x"
+
     def brett(self, lang):
         return Brett(self, lang)
 
@@ -36,7 +42,7 @@ class Brett(MagicalListMixin):
     lang = attr.ib()
 
     def __str__(self):
-        return f"{self.material.name}-{self.breit}x{self.lang}"
+        return f"{self.material}{self.lang}"
 
     @property
     def breit(self):
