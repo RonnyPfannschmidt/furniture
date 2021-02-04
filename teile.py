@@ -21,6 +21,7 @@ ELEMENT_VERBINDER = StückGut("ElementVerbinder")
 
 ROLLE = StückGut("BodenRolleWeich")
 
+
 def teileliste(
     *, korpus_seite, korpus_hinten, fach_kanten, deck, front, fuell, mat_fachboden
 ):
@@ -39,7 +40,7 @@ def teileliste(
     schublade_breite = fach_kanten.brett(breite_ausspaarung)
     schublade_seite = fach_kanten.brett(seitenteil.lang - 2 * fach_kanten.dick - SPIEL)
 
-    XXX: hack
+    # XXX: hack
 
     schublade_innenbreite = breite_ausspaarung - 2 * fach_kanten.dick
     mat_innenboden = attr.evolve(mat_fachboden, breit=schublade_innenbreite + 2 * SPIEL)
