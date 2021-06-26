@@ -6,6 +6,7 @@ class MaterialTyp(enum.Enum):
     BRETT = enum.auto()
     SCHREINERPLATTE = enum.auto()
     SPERRHOLZ = enum.auto()
+    Balken = enum.auto()
 
 
 class MagicalListMixin:

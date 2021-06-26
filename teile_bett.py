@@ -29,16 +29,16 @@ def teileliste(
     hinterwand = korpus_hinten.brett(ELEMENT)
     deckteil = deck.brett(ELEMENT)
 
-    seitentbreite = ELEMENT - ÜBERSTAND - korpus_hinten.dick - ÜBERSTAND - front.dick
+    seitent_breite = ELEMENT - ÜBERSTAND - korpus_hinten.dick - ÜBERSTAND - front.dick
 
-    seitenteil = korpus_seite.brett(seitentbreite)
+    seiten_teil = korpus_seite.brett(seitent_breite)
 
     front_teil = front.brett(hinterwand.lang - SPIEL // 2)
 
     breite_ausspaarung = (ELEMENT - 3 * korpus_seite.dick) // 2 - SPIEL
 
     schublade_breite = fach_kanten.brett(breite_ausspaarung)
-    schublade_seite = fach_kanten.brett(seitenteil.lang - 2 * fach_kanten.dick - SPIEL)
+    schublade_seite = fach_kanten.brett(seiten_teil.lang - 2 * fach_kanten.dick - SPIEL)
 
     # XXX: hack
 
@@ -65,7 +65,7 @@ def teileliste(
         hinterwand
         + verbindung
         + deckteil * 2
-        + seitenteil * 3
+        + seiten_teil * 3
         + verbindung * 3 * 3
         + schublade * 2
     )
